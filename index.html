@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>MY DISCIPLINE</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#090909">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090909;color:#eee;font-family:Arial,sans-serif}
+header{padding:23px 18px;background:linear-gradient(120deg,#211a0e,#111);border-bottom:1px solid #b99545}
+h1{color:#e4bd63;margin:0;font-size:25px;letter-spacing:2px}
+header p{color:#aaa;margin:7px 0 0}
+nav{display:flex;gap:8px;overflow:auto;padding:12px;background:#111;position:sticky;top:0;z-index:5}
+nav button{white-space:nowrap;background:#242424;color:#ddd;border:1px solid #444;padding:10px 13px;border-radius:9px}
+nav button.active{background:#c6a04d;color:#111}
+main{padding:14px;max-width:850px;margin:auto}
+section{display:none}
+section.active{display:block}
+.card{background:#171717;border:1px solid #333;border-radius:15px;padding:17px;margin:13px 0;box-shadow:0 5px 18px #0005}
+h2{color:#d8b45c;font-size:19px;margin:0 0 14px}
+h3{margin:5px 0 12px}
+input,select,textarea{width:100%;padding:12px;margin:6px 0 12px;background:#242424;color:white;border:1px solid #555;border-radius:8px}
+label{color:#ccc;font-size:13px}
+button{cursor:pointer;border:0;border-radius:8px;padding:11px 14px;background:#c6a04d;color:#111;font-weight:bold}
+button.secondary{background:#333;color:#eee}
+button.danger{background:#8c3333;color:white}
+.item{padding:12px;background:#242424;border-radius:9px;margin:8px 0;overflow-wrap:anywhere}
+.item small{color:#aaa}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row button{margin-top:7px}
+.weekdays{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.weekdays label{background:#242424;padding:9px;border-radius:7px}
+.weekdays input{width:auto;margin:0}
+.stat{font-size:25px;color:#d8b45c;font-weight:bold}
+.muted{color:#999;font-size:13px}
+#clock{font-size:30px;color:#d8b45c}
+#alertBox{display:none;background:#614b1e;padding:14px;border-radius:10px;margin:12px 0}
+.progress-track{height:13px;background:#333;border-radius:20px;overflow:hidden;margin:14px 0}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#a77b25,#f5d477);border-radius:20px;transition:width .5s}
+.progress-number{font-size:39px;font-weight:bold;color:#e5bd60}
+.quote-card{background:linear-gradient(135deg,#302516,#171717);border:1px solid #a77b36}
+#dailyQuote{font-size:18px;line-height:1.5;color:#f0d28d;font-style:italic}
+.hero{background:linear-gradient(135deg,#302516,#151515);border:1px solid #98743c}
+</style>
+</head>
+ <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js")
+    .then(() => console.log("App ready offline"))
+    .catch(err => console.log("Service Worker:", err));
+}
+  </script>
+<body>
+<header>
+<h1>MY DISCIPLINE</h1>
+<p>Build your day. Control your habits. Stay consistent.</p>
+</header>
+
+<nav>
+<button class="active" onclick="show('home',this)">Home</button>
+<button onclick="show('timetable',this)">Timetable</button>
+<button onclick="show('study',this)">Study</button>
+<button onclick="show('habits',this)">Habits</button>
+<button onclick="show('prayers',this)">Prayers</button>
+<button onclick="show('goals',this)">Goals</button>
+<button onclick="show('journal',this)">Journal</button>
+<button onclick="show('settings',this)">Settings</button>
+</nav>
+
+<main>
+<div id="alertBox"></div>
+
+<section id="home" class="active">
+<div class="card hero">
+<h2>Welcome Back ✦</h2>
+<div id="clock">--:--:--</div>
+<p id="today"></p>
+<p class="muted">Every day is a new opportunity.</p>
+</div>
+
+<div class="card quote-card">
+<h2>✦ Today's Motivation</h2>
+<p id="dailyQuote">Your future is created by what you do today.</p>
+</div>
+
+<div class="card">
+<h2>Overall Progress</h2>
+<div class="progress-number" id="progressPercent">0%</div>
+<div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+<p id="progressDetails" class="muted">0 completed · 0 remaining</p>
+</div>
+
+<div class="card">
+<h2>Next Activity</h2>
+<div id="nextActivity">No upcoming activity</div>
+</div>
+
+<div class="card">
+<h2>Today's Overview</h2>
+<div class="stat" id="taskCount">0</div>
+<p class="muted">Study tasks completed</p>
+<div class="stat" id="habitCount">0</div>
+<p class="muted">Habits completed today</p>
+<div class="stat" id="prayerCount">0</div>
+<p class="muted">Prayers completed today</p>
+</div>
+
+<div class="card">
+<h2>Today's Timetable</h2>
+<div id="todaySchedule">No activities scheduled.</div>
+</div>
+</section>
+
+<section id="timetable">
+<div class="card">
+<h2>Daily Timetable & Routine</h2>
+<p class="muted">Schedule study, exercise, breaks and daily routines.</p>
+<label>Activity name</label>
+<input id="activityName" placeholder="e.g. Science Study">
+<label>Category</label>
+<select id="activityCategory">
+<option>Study</option><option>Routine</option><option>Exercise</option><option>Break</option><option>Other</option>
+</select>
+<label>Start time</label>
+<input id="startTime" type="time">
+<label>End time</label>
+<input id="endTime" type="time">
+<label>Repeat on</label>
+<div class="weekdays">
+<label><input type="checkbox" name="days" value="1" checked> Mon</label>
+<label><input type="checkbox" name="days" value="2" checked> Tue</label>
+<label><input type="checkbox" name="days" value="3" checked> Wed</label>
+<label><input type="checkbox" name="days" value="4" checked> Thu</label>
+<label><input type="checkbox" name="days" value="5" checked> Fri</label>
+<label><input type="checkbox" name="days" value="6" checked> Sat</label>
+<label><input type="checkbox" name="days" value="0"> Sun</label>
+</div>
+<label><input type="checkbox" id="activityAlert" checked style="width:auto"> Alert me at start time</label><br><br>
+<button onclick="saveActivity()" id="saveActivityBtn">Add to Timetable</button>
+<button class="secondary" onclick="requestNotifications()">Enable Notifications</button>
+<p class="muted">Web alerts require this page to remain open. Reliable alarms when the app is closed require native Android integration.</p>
+</div>
+<div class="card">
+<h2>Your Scheduled Activities</h2>
+<div id="scheduleList"></div>
+</div>
+</section>
+
+<section id="study">
+<div class="card">
+<h2>Study Tasks</h2>
+<input id="studyInput" placeholder="Enter subject or chapter">
+<button onclick="addStudy()">Add Task</button>
+<div id="studyList"></div>
+</div>
+</section>
+
+<section id="habits">
+<div class="card">
+<h2>Habit Tracker</h2>
+<input id="habitInput" placeholder="Enter a habit">
+<button onclick="addHabit()">Add Habit</button>
+<div id="habitList"></div>
+</div>
+</section>
+
+<section id="prayers">
+<div class="card">
+<h2>Prayer Tracker</h2>
+<div id="prayerList"></div>
+</div>
+</section>
+
+<section id="goals">
+<div class="card">
+<h2>My Goals</h2>
+<input id="goalInput" placeholder="Write your goal">
+<button onclick="addGoal()">Add Goal</button>
+<div id="goalList"></div>
+</div>
+</section>
+
+<section id="journal">
+<div class="card">
+<h2>Daily Journal</h2>
+<textarea id="journalText" rows="7" placeholder="Write about your day..."></textarea>
+<button onclick="saveJournal()">Save Journal</button>
+<p id="journalStatus" class="muted"></p>
+</div>
+</section>
+
+<section id="settings">
+<div class="card">
+<h2>Backup & Restore</h2>
+<button onclick="exportData()">Download Backup</button>
+<label>Restore backup file</label>
+<input type="file" id="backupFile" accept=".json">
+<button onclick="importData()">Restore Data</button>
+</div>
+<div class="card">
+<h2>Notifications</h2>
+<button onclick="requestNotifications()">Enable Notifications</button>
+<p class="muted">Allow browser notifications for timetable alerts.</p>
+</div>
+</section>
+</main>
+
+<script>
+const defaults={activities:[],study:[],habits:[],prayers:["Fajr","Dhuhr","Asr","Maghrib","Isha"],goals:[]};
+let data={...defaults};
+try{data={...defaults,...JSON.parse(localStorage.getItem("disciplineData")||"{}")}}catch(e){}
+let editingId=null;
+let alerted={};
+
+function save(){localStorage.setItem("disciplineData",JSON.stringify(data))}
+function todayKey(){return new Date().toLocaleDateString("en-CA")}
+function dayNumber(){return new Date().getDay()}
+function show(id,btn){
+document.querySelectorAll("main section").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");renderAll();
+}
+function escapeHTML(s){
+return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function saveActivity(){
+const name=document.getElementById("activityName").value.trim();
+const start=document.getElementById("startTime").value;
+const end=document.getElementById("endTime").value;
+const days=[...document.querySelectorAll('input[name="days"]:checked')].map(x=>Number(x.value));
+if(!name||!start||!end||!days.length){alert("Fill all fields and select at least one day.");return}
+if(end<=start){alert("End time must be later than start time.");return}
+const item={id:editingId||String(Date.now()),name,category:document.getElementById("activityCategory").value,start,end,days,alert:document.getElementById("activityAlert").checked};
+if(editingId)data.activities=data.activities.map(x=>x.id===editingId?item:x);
+else data.activities.push(item);
+editingId=null;
+document.getElementById("activityName").value="";
+document.getElementById("startTime").value="";
+document.getElementById("endTime").value="";
+document.getElementById("saveActivityBtn").textContent="Add to Timetable";
+document.querySelectorAll('input[name="days"]').forEach(x=>x.checked=x.value!=="0");
+document.getElementById("activityAlert").checked=true;
+save();renderAll();
+}
+function editActivity(id){
+const a=data.activities.find(x=>x.id===id);if(!a)return;
+editingId=id;
+document.getElementById("activityName").value=a.name;
+document.getElementById("activityCategory").value=a.category;
+document.getElementById("startTime").value=a.start;
+document.getElementById("endTime").value=a.end;
+document.getElementById("activityAlert").checked=a.alert;
+document.querySelectorAll('input[name="days"]').forEach(x=>x.checked=a.days.includes(Number(x.value)));
+document.getElementById("saveActivityBtn").textContent="Update Activity";
+document.getElementById("activityName").scrollIntoView({behavior:"smooth"});
+}
+function deleteActivity(id){
+if(confirm("Delete this activity?")){data.activities=data.activities.filter(x=>x.id!==id);save();renderAll()}
+}
+function renderSchedule(){
+const list=document.getElementById("scheduleList");
+const all=[...data.activities].sort((a,b)=>a.start.localeCompare(b.start));
+list.innerHTML=all.length?all.map(a=>
+`<div class="item"><b>${escapeHTML(a.name)}</b><br><small>${escapeHTML(a.category)} · ${a.start} – ${a.end} · ${a.days.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")}</small><div class="row"><button class="secondary" onclick="editActivity('${a.id}')">Edit</button><button class="danger" onclick="deleteActivity('${a.id}')">Delete</button></div></div>`).join(""):"No activities added yet.";
+const day=data.activities.filter(a=>a.days.includes(dayNumber())).sort((a,b)=>a.start.localeCompare(b.start));
+document.getElementById("todaySchedule").innerHTML=day.length?day.map(a=>`<div class="item"><b>${a.start} – ${a.end}</b><br>${escapeHTML(a.name)}</div>`).join(""):"No activities scheduled today.";
+const current=new Date().toTimeString().slice(0,5);
+const next=day.find(a=>a.start>current);
+document.getElementById("nextActivity").textContent=next?`${next.name} at ${next.start}`:"No more activities today";
+}
+function checkAlerts(){
+const now=new Date(),day=now.getDay(),time=now.toTimeString().slice(0,5),date=todayKey();
+data.activities.forEach(a=>{
+const key=date+"_"+a.id;
+if(a.alert&&a.days.includes(day)&&a.start===time&&!alerted[key]){
+alerted[key]=true;
+const msg="Time for "+a.name;
+document.getElementById("alertBox").style.display="block";
+document.getElementById("alertBox").textContent="⏰ "+msg;
+if("Notification" in window&&Notification.permission==="granted")new Notification("MY DISCIPLINE",{body:msg});
+else alert("⏰ "+msg);
+}
+});
+}
+async function requestNotifications(){
+if(!("Notification" in window)){alert("Notifications are not supported in this browser.");return}
+const p=await Notification.requestPermission();
+alert(p==="granted"?"Notifications enabled!":"Permission not granted.");
+}
+function addStudy(){
+const v=document.getElementById("studyInput").value.trim();if(!v)return;
+data.study.push({id:Date.now(),name:v,done:false});document.getElementById("studyInput").value="";
+save();renderAll();
+}
+function toggleStudy(id){const x=data.study.find(x=>x.id===id);if(x)x.done=!x.done;save();renderAll()}
+function deleteStudy(id){data.study=data.study.filter(x=>x.id!==id);save();renderAll()}
+function renderStudy(){
+document.getElementById("studyList").innerHTML=data.study.map(x=>
+`<div class="item">${x.done?"✅":"📘"} ${escapeHTML(x.name)} <button class="secondary" onclick="toggleStudy(${x.id})">${x.done?"Undo":"Done"}</button> <button class="danger" onclick="deleteStudy(${x.id})">Delete</button></div>`).join("")||"No study tasks yet.";
+}
+function addHabit(){
+const v=document.getElementById("habitInput").value.trim();if(!v)return;
+data.habits.push({id:Date.now(),name:v,done:false,date:todayKey()});
+document.getElementById("habitInput").value="";save();renderAll();
+}
+function toggleHabit(id,v){let x=data.habits.find(x=>x.id===id);if(x){x.done=v;x.date=todayKey()}save();renderAll()}
+function deleteHabit(id){data.habits=data.habits.filter(x=>x.id!==id);save();renderAll()}
+function renderHabits(){
+document.getElementById("habitList").innerHTML=data.habits.map(x=>
+`<div class="item"><label><input type="checkbox" style="width:auto" ${x.done&&x.date===todayKey()?"checked":""} onchange="toggleHabit(${x.id},this.checked)"> ${escapeHTML(x.name)}</label> <button class="danger" onclick="deleteHabit(${x.id})">Delete</button></div>`).join("")||"No habits added.";
+}
+function renderPrayers(){
+document.getElementById("prayerList").innerHTML=data.prayers.map(p=>
+`<div class="item"><label><input type="checkbox" style="width:auto" id="p${p}" onchange="savePrayer()" ${data["prayer_"+todayKey()+"_"+p]?"checked":""}> ${p}</label></div>`).join("");
+}
+function savePrayer(){data.prayers.forEach(p=>{data["prayer_"+todayKey()+"_"+p]=document.getElementById("p"+p).checked});save();renderAll()}
+function addGoal(){
+const v=document.getElementById("goalInput").value.trim();if(!v)return;
+data.goals.push({id:Date.now(),name:v,done:false});document.getElementById("goalInput").value="";save();renderAll();
+}
+function toggleGoal(id,v){let g=data.goals.find(x=>x.id===id);if(g)g.done=v;save();renderAll()}
+function deleteGoal(id){data.goals=data.goals.filter(x=>x.id!==id);save();renderAll()}
+function renderGoals(){
+document.getElementById("goalList").innerHTML=data.goals.map(g=>
+`<div class="item"><label><input type="checkbox" style="width:auto" ${g.done?"checked":""} onchange="toggleGoal(${g.id},this.checked)"> ${escapeHTML(g.name)}</label> <button class="danger" onclick="deleteGoal(${g.id})">Delete</button></div>`).join("")||"No goals added.";
+}
+function saveJournal(){
+localStorage.setItem("disciplineJournal_"+todayKey(),document.getElementById("journalText").value);
+document.getElementById("journalStatus").textContent="Journal saved!";
+}
+function updateStats(){
+const studyDone=data.study.filter(x=>x.done).length;
+const habitDone=data.habits.filter(x=>x.done&&x.date===todayKey()).length;
+const prayerDone=data.prayers.filter(p=>data["prayer_"+todayKey()+"_"+p]).length;
+const goalDone=data.goals.filter(x=>x.done).length;
+const total=data.study.length+data.habits.length+data.prayers.length+data.goals.length;
+const completed=studyDone+habitDone+prayerDone+goalDone;
+const pending=total-completed;
+const percent=total===0?0:Math.round(completed/total*100);
+document.getElementById("taskCount").textContent=studyDone;
+document.getElementById("habitCount").textContent=habitDone;
+document.getElementById("prayerCount").textContent=prayerDone;
+document.getElementById("progressPercent").textContent=percent+"%";
+document.getElementById("progressBar").style.width=percent+"%";
+document.getElementById("progressDetails").textContent=completed+" completed · "+pending+" remaining";
+}
+function renderAll(){
+renderSchedule();renderStudy();renderHabits();renderPrayers();renderGoals();updateStats();
+document.getElementById("journalText").value=localStorage.getItem("disciplineJournal_"+todayKey())||"";
+}
+function exportData(){
+const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="my-discipline-backup.json";a.click();URL.revokeObjectURL(a.href);
+}
+function importData(){
+const file=document.getElementById("backupFile").files[0];if(!file){alert("Select a backup file first.");return}
+const reader=new FileReader();
+reader.onload=()=>{try{const x=JSON.parse(reader.result);if(!x.activities||!x.study)throw Error();data={...defaults,...x};save();renderAll();alert("Backup restored!")}catch(e){alert("Invalid backup file.")}};
+reader.readAsText(file);
+}
+const motivationQuotes=[
+"Small steps every day lead to big results.",
+"Discipline is choosing what matters most.",
+"Your future depends on what you do today.",
+"Don't wait for motivation. Build consistency.",
+"One focused hour can change your day.",
+"Progress, not perfection.",
+"Make yourself proud through your actions.",
+"Dream big. Start small. Act now."
+];
+document.getElementById("dailyQuote").textContent=motivationQuotes[Math.floor(Math.random()*motivationQuotes.length)];
+function tick(){
+const now=new Date();
+document.getElementById("clock").textContent=now.toLocaleTimeString();
+document.getElementById("today").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+checkAlerts();
+}
+renderAll();tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
