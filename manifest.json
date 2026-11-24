@@ -1,0 +1,10 @@
+{
+  "name": "MY DISCIPLINE",
+  "short_name": "Discipline",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#090909",
+  "orientation": "portrait",
+  "icons": []
+}
