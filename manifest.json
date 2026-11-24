@@ -1,21 +1,25 @@
 {
   "name": "MY DISCIPLINE",
   "short_name": "MyDiscipline",
-  "start_url": "./",
+  "description": "Build your day. Control your habits. Stay consistent.",
+  "start_url": "/My-Discipline/",
+  "scope": "/My-Discipline/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#090909",
   "theme_color": "#090909",
-  "description": "Build your day. Control your habits. Stay consistent.",
   "icons": [
     {
-      "src": "https://ui-avatars.com/api/?name=MD&background=090909&color=e4bd63&size=192",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzA5MDkwOSIvPjx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtc2l6ZT0iODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2U0YmQ2MyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TUQ8L3RleHQ+PC9zdmc+",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "https://ui-avatars.com/api/?name=MD&background=090909&color=e4bd63&size=512",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzA5MDkwOSIvPjx0ZXh0IHg9IjI1NiIgeT0iMzIwIiBmb250LXNpemU9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmaWxsPSIjZTRiZDYzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NRDwvdGV4dD48L3N2Zz4=",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }
